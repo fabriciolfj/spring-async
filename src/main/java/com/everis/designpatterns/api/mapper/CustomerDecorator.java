@@ -6,6 +6,7 @@ import com.everis.designpatterns.domain.model.Address;
 import com.everis.designpatterns.domain.model.Customer;
 import com.everis.designpatterns.domain.model.PersonLegal;
 import com.everis.designpatterns.domain.model.PersonPhysical;
+import com.everis.designpatterns.domain.model.enuns.StatusRegister;
 import com.everis.designpatterns.domain.model.enuns.TypeCustomer;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,9 @@ public abstract class CustomerDecorator implements CustomerMapper {
 
     @Override
     public PersonPhysical toModelPersonPhysical(CustomerDto dto) {
-        PersonPhysical customer = mapper.toModelPersonPhysical(dto);
+        final PersonPhysical customer = mapper.toModelPersonPhysical(dto);
         customer.setCpf(dto.getDocument());
+        customer.setStatusRegister(StatusRegister.ATIVE);
         setAdresses(dto, customer);
 
         return customer;
@@ -52,8 +54,9 @@ public abstract class CustomerDecorator implements CustomerMapper {
 
     @Override
     public PersonLegal toModelPersonLegal(CustomerDto dto) {
-        PersonLegal customer = mapper.toModelPersonLegal(dto);
+        final PersonLegal customer = mapper.toModelPersonLegal(dto);
         customer.setCnpj(dto.getDocument());
+        customer.setStatusRegister(StatusRegister.ATIVE);
         setAdresses(dto, customer);
 
         return customer;

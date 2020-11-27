@@ -6,9 +6,11 @@ import com.everis.designpatterns.domain.model.Customer;
 import com.everis.designpatterns.infrastructure.repositories.AddressRepository;
 import com.everis.designpatterns.infrastructure.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +20,14 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     public void execute(final Customer customer) {
-        customerRepository.save(customer);
-        process.stream().forEach(p -> p.execute(customer));
+        CompletableFuture.runAsync(() -> customerRepository.save(customer))
+                .whenCompleteAsync((c, t) -> {
+                    if (t != null) {
+                        throw new RuntimeException("Fail save customer");
+                    }
+
+                    process.stream().forEach(p -> p.execute(customer));
+                });
     }
 
     public Customer getById(final Long id) {
